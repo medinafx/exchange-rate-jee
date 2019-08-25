@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 import ni.jug.exchangerate.dto.CommercialBankExchangeRateDTO;
 import ni.jug.exchangerate.logic.CommercialBankExchangeRateProvider;
 import ni.jug.exchangerate.model.Bank;
@@ -15,6 +17,7 @@ import ni.jug.exchangerate.model.Bank;
  * @author aalaniz
  */
 @Path("commercialBankExchangeRates")
+@Produces("application/json")
 public class CommercialBankExchangeRateResource {
 
     @Inject

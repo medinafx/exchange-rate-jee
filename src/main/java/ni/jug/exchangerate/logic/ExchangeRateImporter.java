@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.time.YearMonth;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.Schedule;
@@ -18,16 +19,19 @@ import javax.ejb.TimerService;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import ni.jug.cb.exchangerate.ExchangeRateCBClient;
-import ni.jug.cb.exchangerate.ExchangeRateTrade;
+import ni.jug.exchangerate.cb.ExchangeRateTrade;
 import ni.jug.exchangerate.model.Bank;
 import ni.jug.exchangerate.model.CentralBankExchangeRate;
 import ni.jug.exchangerate.model.CommercialBankExchangeRate;
 import ni.jug.exchangerate.model.Currency;
 import ni.jug.exchangerate.util.Dates;
-import ni.jug.ncb.exchangerate.ExchangeRateBCNClient;
-import ni.jug.ncb.exchangerate.ExchangeRateScraper;
-import ni.jug.ncb.exchangerate.MonthlyExchangeRate;
+
+import ni.jug.exchangerate.ncb.NiCentralBankExchangeRateClient;
+import ni.jug.exchangerate.ncb.NiCentralBankExchangeRateScraper;
+import ni.jug.exchangerate.ncb.MonthlyExchangeRate;
+/*import ni.jug.ncb.exchangerate.ExchangeRateBCNClient;
+import ni.jug.ncb.exchangerate.NiCentralBankExchangeRateScraper;
+import ni.jug.ncb.exchangerate.MonthlyExchangeRate;*/
 
 /**
  *
@@ -62,11 +66,11 @@ public class ExchangeRateImporter {
     @Timeout
     public void importInitialCentralBankExchangeRate(Timer timer) {
         Currency dollar = currencyProvider.getDollar();
-        LocalDate processDate = LocalDate.of(ExchangeRateBCNClient.MINIMUM_YEAR, 1, 1);
+        LocalDate processDate = LocalDate.of(NiCentralBankExchangeRateClient.MINIMUM_YEAR, 1, 1);
         LocalDate endDate = LocalDate.now().withDayOfMonth(1);
 
         while (processDate.isBefore(endDate)) {
-            MonthlyExchangeRate monthlyExchangeRate = new ExchangeRateScraper().getMonthlyExchangeRate(processDate);
+            MonthlyExchangeRate monthlyExchangeRate = new NiCentralBankExchangeRateScraper().getMonthlyExchangeRate(processDate);
             for (Map.Entry<LocalDate, BigDecimal> exchangeRateByDate : monthlyExchangeRate.getMonthlyExchangeRate().entrySet()) {
                 CentralBankExchangeRate exchangeRate = new CentralBankExchangeRate(dollar, exchangeRateByDate.getKey(),
                         exchangeRateByDate.getValue());
@@ -88,7 +92,8 @@ public class ExchangeRateImporter {
         }
 
         LOGGER.info("Importando tasas del sitio web del BCN");
-        MonthlyExchangeRate currentMonthExchangeRate = new ExchangeRateScraper().getCurrentMonthExchangeRate();
+        YearMonth now = YearMonth.now();
+        MonthlyExchangeRate currentMonthExchangeRate = new NiCentralBankExchangeRateScraper().getMonthlyExchangeRate(now);
         for (Map.Entry<LocalDate, BigDecimal> exchangeRateByDate : currentMonthExchangeRate.getMonthlyExchangeRate().entrySet()) {
             CentralBankExchangeRate exchangeRate = new CentralBankExchangeRate(dollar, exchangeRateByDate.getKey(),
                     exchangeRateByDate.getValue());
@@ -108,7 +113,7 @@ public class ExchangeRateImporter {
         }
 
         LOGGER.info("Importando tasas del sitio web del BCN");
-        MonthlyExchangeRate currentMonthExchangeRate = new ExchangeRateScraper().getMonthlyExchangeRate(nextPeriod);
+        MonthlyExchangeRate currentMonthExchangeRate = new NiCentralBankExchangeRateScraper().getMonthlyExchangeRate(nextPeriod);
         for (Map.Entry<LocalDate, BigDecimal> exchangeRateByDate : currentMonthExchangeRate.getMonthlyExchangeRate().entrySet()) {
             CentralBankExchangeRate exchangeRate = new CentralBankExchangeRate(dollar, exchangeRateByDate.getKey(),
                     exchangeRateByDate.getValue());
@@ -118,7 +123,7 @@ public class ExchangeRateImporter {
 
     @Schedule(hour = "*", minute = "*/25", persistent = false)
     public void importCommercialBankExchangeRate() {
-        Currency dollar = currencyProvider.getDollar();
+        /*Currency dollar = currencyProvider.getDollar();
 
         LOGGER.info("Leyendo compra/venta de los bancos comerciales");
         List<Bank> scrappedBanks = commercialBankExchangeRateProvider.findBankByCurrentDate();
@@ -132,7 +137,7 @@ public class ExchangeRateImporter {
                         trade.buy(), trade.isBestSellPrice(), trade.isBestBuyPrice());
                 em.persist(exchangeRate);
             }
-        }
+        }*/
     }
 
 }

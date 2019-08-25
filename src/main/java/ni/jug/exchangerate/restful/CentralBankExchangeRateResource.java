@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import ni.jug.exchangerate.dto.CentralBankExchangeRateDTO;
 import ni.jug.exchangerate.logic.CentralBankExchangeRateProvider;
 import ni.jug.exchangerate.logic.CurrencyProvider;
@@ -16,6 +17,7 @@ import ni.jug.exchangerate.model.Currency;
  * @author aalaniz
  */
 @Path("centralBankExchangeRates")
+@Produces("application/json")
 public class CentralBankExchangeRateResource {
 
     private static final String DOLLAR_ISO_STRING_CODE = "USD";
