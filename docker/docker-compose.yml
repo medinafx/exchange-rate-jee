@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+  test:
+    build:
+      context: ../../
+      dockerfile: docker/test/Dockerfile
+    enviroment:
+      - TEST_OUTPUT_DIR=/reports
+    volumes:
+      - maven-cache:/root/.m2/repository
+    networks:
+      - exchange-rate-test-network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:10
+    enviroment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?err}
+      - POSTGRES_USER=${POSTGRES_USER:?err}
+    networks:
+      - exchange-rate-test-network
+    ports:
+      - '5432:5432'
+
+networks:
+  exchange-rate-test-network:
+
+volumes:
+  maven-cache:

@@ -9,8 +9,8 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import ni.jug.cb.exchangerate.Cookie;
-import ni.jug.cb.exchangerate.ExecutionContext;
+import ni.jug.exchangerate.cb.Cookie;
+import ni.jug.exchangerate.cb.ExecutionContext;
 
 /**
  *
@@ -22,19 +22,19 @@ public class BdfCookieResource {
     @GET
     public JsonArray findCookies() {
         JsonArrayBuilder cookiesBuilder = Json.createArrayBuilder();
-        for (Map.Entry<String, String> cookieEntry : ExecutionContext.getInstance().bdfCookies().entrySet()) {
+       /* for (Map.Entry<String, String> cookieEntry : ExecutionContext.getInstance().bdfCookies().entrySet()) {
             JsonObjectBuilder cookieBuilder = Json.createObjectBuilder();
             cookieBuilder.add("name", cookieEntry.getKey())
                     .add("value", cookieEntry.getValue());
             cookiesBuilder.add(cookieBuilder);
-        }
+        }*/
         return cookiesBuilder.build();
     }
 
     @PUT
     public void updateCookie(JsonObject cookie) {
-        Cookie cookieWithDefaults = new Cookie(cookie.getString("name", "no-name"), cookie.getString("value", "no-value"));
-        ExecutionContext.getInstance().addOrReplaceBdfCookie(cookieWithDefaults);
+        /*Cookie cookieWithDefaults = new Cookie(cookie.getString("name", "no-name"), cookie.getString("value", "no-value"));
+        ExecutionContext.getInstance().addOrReplaceCookie(cookieWithDefaults);*/
     }
 
 }
